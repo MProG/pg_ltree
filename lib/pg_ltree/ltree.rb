@@ -191,8 +191,10 @@ module PgLtree
       #
       # @return [ActiveRecord::Relation]
       def cascade_update
-        ltree_scope.where(["#{ltree_path_column} <@ ?", ltree_path_was]).where(["#{ltree_path_column} != ?", ltree_path]).
-        update_all ["#{ltree_path_column} = ? || subpath(#{ltree_path_column}, nlevel(?))", ltree_path, ltree_path_was]
+        if ltree_path_was.include? self.id.to_s
+          ltree_scope.where(["#{ltree_path_column} <@ ?", ltree_path_was]).where(["#{ltree_path_column} != ?", ltree_path]).
+          update_all ["#{ltree_path_column} = ? || subpath(#{ltree_path_column}, nlevel(?))", ltree_path, ltree_path_was]
+        end
       end
 
       # Delete all children for current path
